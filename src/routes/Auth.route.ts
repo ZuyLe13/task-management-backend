@@ -1,18 +1,12 @@
 import { Router } from 'express';
 import {
-  createItem,
-  getItems,
-  getItemById,
-  updateItem,
-  deleteItem,
+  signIn,
+  signUp,
 } from '../controllers/auth.controller';
 
 const router = Router();
 
-router.get('/', getItems);
-router.get('/:id', getItemById);
-router.post('/', createItem);
-router.put('/:id', updateItem);
-router.delete('/:id', deleteItem);
+router.post('/sign-up', signUp);
+router.post('/sign-in', signIn);
 
 export default router;

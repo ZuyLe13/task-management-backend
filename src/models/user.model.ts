@@ -1,6 +1,7 @@
-export interface Item {
+export interface User {
   id: number;
-  name: string;
+  email: string;
+  password: string;
 }
 
-export let items: Item[] = [];
+export let users: User[] = [];

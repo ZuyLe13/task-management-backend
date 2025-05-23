@@ -1,71 +1,45 @@
-import { Request, Response, NextFunction } from 'express';
-import { items, Item } from '../models/user.model';
+import { Request, Response } from 'express';
+import { users, User } from '../models/user.model';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-// Create an item
-export const createItem = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { name } = req.body;
-    const newItem: Item = { id: Date.now(), name };
-    items.push(newItem);
-    res.status(201).json(newItem);
-  } catch (error) {
-    next(error);
+const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
+
+export const signUp = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  const existingUser = users.find(user => user.email === email);
+  if (existingUser) {
+    res.status(400).json({ message: 'Email already exists' });
+    return;
   }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser: User = {
+    id: users.length + 1,
+    email,
+    password: hashedPassword,
+  };
+
+  users.push(newUser);
+  res.status(201).json({ message: 'User created successfully' });
 };
 
-// Read all items
-export const getItems = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    res.json(items);
-  } catch (error) {
-    next(error);
-  }
-};
+export const signIn = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-// Read single item
-export const getItemById = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = parseInt(req.params.id, 10);
-    const item = items.find((i) => i.id === id);
-    if (!item) {
-      res.status(404).json({ message: 'Item not found' });
-      return;
-    }
-    res.json(item);
-  } catch (error) {
-    next(error);
+  const user = users.find(user => user.email === email);
+  if (!user) {
+    res.status(400).json({ message: 'Invalid credentials' }); 
+    return;
   }
-};
 
-// Update an item
-export const updateItem = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = parseInt(req.params.id, 10);
-    const { name } = req.body;
-    const itemIndex = items.findIndex((i) => i.id === id);
-    if (itemIndex === -1) {
-      res.status(404).json({ message: 'Item not found' });
-      return;
-    }
-    items[itemIndex].name = name;
-    res.json(items[itemIndex]);
-  } catch (error) {
-    next(error);
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    res.status(400).json({ message: 'Invalid credentials' });
+    return;
   }
-};
 
-// Delete an item
-export const deleteItem = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = parseInt(req.params.id, 10);
-    const itemIndex = items.findIndex((i) => i.id === id);
-    if (itemIndex === -1) {
-      res.status(404).json({ message: 'Item not found' });
-      return;
-    }
-    const deletedItem = items.splice(itemIndex, 1)[0];
-    res.json(deletedItem);
-  } catch (error) {
-    next(error);
-  }
+  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+  res.status(200).json({ token });
 };
