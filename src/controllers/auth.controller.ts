@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
 
 export const signUp = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { fullName, email, password } = req.body;
 
   const existingUser = users.find(user => user.email === email);
   if (existingUser) {
@@ -17,6 +17,7 @@ export const signUp = async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser: User = {
     id: users.length + 1,
+    fullName,
     email,
     password: hashedPassword,
   };
