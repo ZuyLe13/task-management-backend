@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  refreshToken,
   signIn,
   signUp,
 } from '../controllers/auth.controller';
@@ -10,5 +11,6 @@ const router = Router();
 
 router.post('/sign-up', validateBody(signUpSchema), signUp);
 router.post('/sign-in', validateBody(signInSchema), signIn);
+router.post('/refresh-token', refreshToken);
 
 export default router;

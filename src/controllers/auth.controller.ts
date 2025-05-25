@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import UserModel, { User } from '../models/user.model';
+import UserModel from '../models/user.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
-const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
+import config from '../config/config';
 
 export const signUp = async (req: Request, res: Response) => {
   const { fullName, email, password } = req.body;
@@ -41,6 +40,45 @@ export const signIn = async (req: Request, res: Response) => {
     return;
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-  res.status(200).json({ token });
+  const accessToken = jwt.sign(
+    { id: user.id, email: user.email },
+    config.jwtSecret,
+    { expiresIn: '10m' }
+  );
+
+  const refreshToken = jwt.sign(
+    { id: user.id, email: user.email },
+    config.jwtRefreshSecret,
+    { expiresIn: '7d' }
+  );
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  res.status(200).json({ accessToken });
 };
+
+export const refreshToken = async (req: Request, res: Response) => {
+  const token = req.cookies.refreshToken;
+  if (!token) {
+    res.status(401).json({ message: 'Refresh token is required' });
+    return;
+  }
+
+  try {
+    const payload = jwt.verify(token, config.jwtRefreshSecret) as { id: number; email: string };
+    const newAccessToken = jwt.sign(
+      { id: payload.id, email: payload.email },
+      config.jwtSecret,
+      { expiresIn: '10m' }
+    );
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid refresh token' });
+    return;
+  }
+}
