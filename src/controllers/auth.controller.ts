@@ -62,6 +62,16 @@ export const signIn = async (req: Request, res: Response) => {
   res.status(200).json({ accessToken });
 };
 
+export const signOut = async (req: Request, res: Response) => {
+  res.clearCookie('refreshtoken', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict'
+  });
+  
+  res.status(200).json({ message: 'Signed out successfully' });
+};
+
 export const refreshToken = async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
   if (!token) {
