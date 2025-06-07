@@ -15,5 +15,6 @@ export const WorkspaceSchema = z.object({
   title: z.string().min(1, 'Name is required'),
   desc: z.string().optional(),
   owner: z.string().optional(),
+  imageUrl: z.string().optional(),
   members: z.array(WorkspaceMemberSchema).optional(),
 });

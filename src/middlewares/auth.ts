@@ -15,9 +15,7 @@ declare global {
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
-  console.log('🚀 ~ authenticateToken ~ authHeader:', authHeader)
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  console.log('🚀 ~ authenticateToken ~ token:', token)
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
     res.status(404).json({ message: 'Access token required' });
     return;

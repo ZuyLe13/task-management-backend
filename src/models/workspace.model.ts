@@ -11,6 +11,7 @@ export interface Workspace extends Document {
   title: String;
   desc?: String;
   owner: Types.ObjectId;
+  imageUrl?: String;
   members?: WorkspaceMember[];
   createdAt?: Date,
   updatedAt?: Date
@@ -27,6 +28,7 @@ const WorkspaceSchema = new Schema<Workspace>(
   title: { type: String, required: true },
   desc: { type: String },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  imageUrl: { type: String },
   members: { type: [WorkspaceMemberSchema], default: [] },
   },
   { timestamps: true }
