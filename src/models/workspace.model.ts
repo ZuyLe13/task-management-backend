@@ -8,7 +8,7 @@ export interface WorkspaceMember {
 }
 
 export interface Workspace extends Document {
-  name: String;
+  title: String;
   desc?: String;
   owner: Types.ObjectId;
   members?: WorkspaceMember[];
@@ -24,7 +24,7 @@ const WorkspaceMemberSchema = new Schema<WorkspaceMember>({
 
 const WorkspaceSchema = new Schema<Workspace>(
   {
-  name: { type: String, required: true },
+  title: { type: String, required: true },
   desc: { type: String },
   owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   members: { type: [WorkspaceMemberSchema], default: [] },

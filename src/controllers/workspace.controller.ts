@@ -3,9 +3,8 @@ import WorkspaceModel, { Workspace } from '../models/workspace.model';
 
 export const createWorkspace = async (req: Request, res: Response) => {
   try {
-    const { name } = req.body;
+    const { title } = req.body;
     const userId = req.user?._id;
-    console.log('🚀 ~ createWorkspace ~ userId:', userId)
 
     if (!userId) {
       res.status(401).json({ message: 'User not authenticated' });
@@ -13,7 +12,7 @@ export const createWorkspace = async (req: Request, res: Response) => {
     }
 
     const newWorkspace = new WorkspaceModel({
-      name,
+      title,
       owner: userId
     });
 

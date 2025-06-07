@@ -12,7 +12,7 @@ export const WorkspaceMemberSchema = z.object({
 });
 
 export const WorkspaceSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  title: z.string().min(1, 'Name is required'),
   desc: z.string().optional(),
   owner: z.string().optional(),
   members: z.array(WorkspaceMemberSchema).optional(),

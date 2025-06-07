@@ -19,7 +19,7 @@ connectDB();
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
-app.unsubscribe('/api/v1', workspaceRoutes);
+app.use('/api/v1', workspaceRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
