@@ -5,61 +5,77 @@ import jwt from 'jsonwebtoken';
 import config from '../config/config';
 
 export const signUp = async (req: Request, res: Response) => {
-  const { fullName, email, password } = req.body;
-  const user = await UserModel.findOne({ email });
+  try {
+    const { fullName, email, password } = req.body;
+    const user = await UserModel.findOne({ email });
 
-  if (user) {
-    res.status(400).json({ message: 'Email already exists' });
-    return;
+    if (user) {
+      res.status(400).json({ message: 'Email already exists' });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new UserModel({
+      id: await UserModel.countDocuments() + 1,
+      fullName,
+      email,
+      password: hashedPassword
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'User created successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = new UserModel({
-    id: await UserModel.countDocuments() + 1,
-    fullName,
-    email,
-    password: hashedPassword
-  });
-
-  await newUser.save();
-  res.status(201).json({ message: 'User created successfully' });
 };
 
 export const signIn = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  const user = await UserModel.findOne({ email });
+  try {
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email });
 
-  if (!user) {
-    res.status(400).json({ message: 'User not found' });
-    return;
+    if (!user) {
+      res.status(400).json({ message: 'User not found' });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      res.status(400).json({ message: 'Password is incorrect' });
+      return;
+    }
+
+    const accessToken = jwt.sign(
+      { _id: user._id, email: user.email },
+      config.jwtSecret,
+      { expiresIn: '10m' }
+    );
+
+    const refreshToken = jwt.sign(
+      { _id: user._id, email: user.email },
+      config.jwtRefreshSecret,
+      { expiresIn: '7d' }
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      accessToken,
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' })
   }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
-    res.status(400).json({ message: 'Password is incorrect' });
-    return;
-  }
-
-  const accessToken = jwt.sign(
-    { id: user.id, email: user.email },
-    config.jwtSecret,
-    { expiresIn: '10m' }
-  );
-
-  const refreshToken = jwt.sign(
-    { id: user.id, email: user.email },
-    config.jwtRefreshSecret,
-    { expiresIn: '7d' }
-  );
-
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  });
-
-  res.status(200).json({ accessToken });
 };
 
 export const signOut = async (req: Request, res: Response) => {
