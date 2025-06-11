@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import WorkspaceModel, { Workspace } from '../models/workspace.model';
+import WorkspaceModel from '../models/workspace.model';
 
 export const createWorkspace = async (req: Request, res: Response) => {
   try {
-    const { title } = req.body;
+    const { title, desc } = req.body;
     const userId = req.user?._id;
     const imageUrl = req.file?.path;
 
@@ -14,12 +14,13 @@ export const createWorkspace = async (req: Request, res: Response) => {
 
     const newWorkspace = new WorkspaceModel({
       title,
+      desc,
       owner: userId,
       imageUrl
     });
 
     await newWorkspace.save();
-    res.status(201).json({ message: 'Workspace created successfully' });
+    res.status(201).json({ message: 'Workspace created successfully', newWorkspace });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error' });
   }

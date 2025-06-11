@@ -14,14 +14,13 @@ declare global {
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) {
-    res.status(404).json({ message: 'Access token required' });
-    return;
-  }
-
   try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) {
+      res.status(404).json({ message: 'Access token required' });
+      return;
+    }
     const decode = jwt.verify(token, config.jwtSecret) as { _id: string;};
     req.user = decode;
     next();
