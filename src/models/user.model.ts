@@ -9,6 +9,7 @@ export interface User extends Document {
   lastName?: string;
   phone?: string;
   role: ROLE;
+  avatarUrl?: string;
   createdAt: Date,
   updatedAt: Date
 }
@@ -25,10 +26,11 @@ const userSchema = new Schema<User>(
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  firstName: { type: String },
-  lastName: { type: String },
-  phone: { type: String },
-  role: { type: String, enum: ROLE, default: ROLE.MEMBER }
+  firstName: { type: String, default: '' },
+  lastName: { type: String, default: '' },
+  phone: { type: String, default: '' },
+  role: { type: String, enum: ROLE, default: ROLE.MEMBER },
+  avatarUrl: { type: String, default: '' }
   }, { timestamps: true }
 );
 

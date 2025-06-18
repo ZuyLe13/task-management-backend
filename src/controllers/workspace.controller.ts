@@ -16,7 +16,6 @@ export const createWorkspace = async (req: Request, res: Response) => {
       title,
       desc,
       owner: userId,
-      imageUrl
     });
 
     await newWorkspace.save();

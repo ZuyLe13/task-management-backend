@@ -79,7 +79,7 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const signOut = async (req: Request, res: Response) => {
-  res.clearCookie('refreshtoken', {
+  res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: true,
     sameSite: 'strict'
