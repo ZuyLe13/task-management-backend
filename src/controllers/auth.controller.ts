@@ -26,6 +26,7 @@ export const signUp = async (req: Request, res: Response) => {
     res.status(201).json({ message: 'User created successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error' });
+    return;
   }
 };
 
@@ -74,7 +75,8 @@ export const signIn = async (req: Request, res: Response) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' });
+    return;
   }
 };
 
