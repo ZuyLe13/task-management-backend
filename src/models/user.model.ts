@@ -30,7 +30,7 @@ const userSchema = new Schema<User>(
   lastName: { type: String, default: '' },
   phone: { type: String, default: '' },
   role: { type: String, enum: ROLE, default: ROLE.MEMBER },
-  avatarUrl: { type: String, default: '' }
+  avatarUrl: { type: String },
   }, { timestamps: true }
 );
 

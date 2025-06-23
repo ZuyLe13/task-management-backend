@@ -49,19 +49,19 @@ export const signIn = async (req: Request, res: Response) => {
     const accessToken = jwt.sign(
       { _id: user._id, email: user.email },
       config.jwtSecret,
-      { expiresIn: '10m' }
+      { expiresIn: '10s' }
     );
 
     const refreshToken = jwt.sign(
       { _id: user._id, email: user.email },
       config.jwtRefreshSecret,
-      { expiresIn: '7d' }
+      { expiresIn: '1y' }
     );
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -84,9 +84,8 @@ export const signOut = async (req: Request, res: Response) => {
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict'
+    sameSite: 'none'
   });
-  
   res.status(200).json({ message: 'Signed out successfully' });
 };
 
@@ -96,11 +95,10 @@ export const refreshToken = async (req: Request, res: Response) => {
     res.status(401).json({ message: 'Refresh token is required' });
     return;
   }
-
   try {
-    const payload = jwt.verify(token, config.jwtRefreshSecret) as { id: number; email: string };
+    const payload = jwt.verify(token, config.jwtRefreshSecret) as { _id: string; email: string };
     const newAccessToken = jwt.sign(
-      { id: payload.id, email: payload.email },
+      { _id: payload._id, email: payload.email },
       config.jwtSecret,
       { expiresIn: '10m' }
     );
