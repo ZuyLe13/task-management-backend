@@ -1,20 +1,21 @@
-import z from "zod";
+import Joi from "joi";
 
-export const RoleEnum = z.enum(['admin', 'owner', 'member']);
-export type ROLE = z.infer<typeof RoleEnum>;
+const RoleEnum = Joi.string().valid('admin', 'owner', 'member').required();
 
-export const WorkspaceMemberSchema = z.object({
-  user: z.string().refine((val) => val.match(/^[a-f\d]{24}$/i), {
-    message: 'Invalid ObjectId'
+export const WorkspaceMemberSchema = Joi.object({
+  user: Joi.string().pattern(/^[a-f\d]{24}$/i).required().messages({
+    'string.pattern.base': 'Invalid ObjectId',
   }),
   role: RoleEnum,
-  joinedAt: z.coerce.date()
+  joinedAt: Joi.date().required(),
 });
 
-export const WorkspaceSchema = z.object({
-  title: z.string().min(1, 'Name is required'),
-  desc: z.string().optional(),
-  owner: z.string().optional(),
-  imageUrl: z.string().optional(),
-  members: z.array(WorkspaceMemberSchema).optional(),
+export const WorkspaceSchema = Joi.object({
+  title: Joi.string().min(1).required().messages({
+    'string.empty': 'Name is required',
+  }),
+  desc: Joi.string().optional().allow(''),
+  owner: Joi.string().optional().allow(''),
+  imageUrl: Joi.string().optional().allow(''),
+  members: Joi.array().items(WorkspaceMemberSchema).optional(),
 });

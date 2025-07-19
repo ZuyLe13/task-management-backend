@@ -1,13 +1,13 @@
-import { ZodSchema } from "zod";
+import Joi from "joi";
+import { Request, Response, NextFunction } from "express";
 
-export const validateBody = (schema: ZodSchema) => {
-  return (req: any, res: any, next: any) => {
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      const errors = result.error.errors.map(err => err.message);
-      return res.status(400).json({ errors });
+export const validateBody = (schema: Joi.ObjectSchema) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await schema.validateAsync(req.body);
+      next();
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
     }
-    req.body = result.data;
-    next();
   };
-}
+};
