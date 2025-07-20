@@ -2,9 +2,9 @@ import Joi from "joi";
 import TaskStatusModel from "../models/task-status.model";
 
 export const defaultStatuses = [
-  { name: "To Do", code: "TODO", color: "#FF0000", active: true, default: true },
-  { name: "In Process", code: "INPROGRESS", color: "#FFA500", active: true, default: true },
-  { name: "Done", code: "DONE", color: "#00FF00", active: true, default: true },
+  { name: "To Do", code: "TO_DO", color: "#FF0000", isActive: true, isDefault: true },
+  { name: "In Process", code: "IN_PROGRESS", color: "#FFA500", isActive: true, isDefault: false },
+  { name: "Done", code: "DONE", color: "#00FF00", isActive: true, isDefault: false },
 ];
 
 export const initializeDefaultStatuses = async () => {
@@ -20,19 +20,23 @@ export const initializeDefaultStatuses = async () => {
   }
 }
 
+export const generateCode = (name: string): string => {
+  return name.toUpperCase().replace(/\s+/g, '_').slice(0, 20);
+};
+
 // Validation schemas
 export const taskStatusSchema = Joi.object({
   name: Joi.string().min(3).max(50).required(),
-  code: Joi.string().min(2).max(20).required(),
+  code: Joi.string().pattern(/^[A-Z]+(_[A-Z]+)*$/).min(2).max(20).optional(),
   color: Joi.string().pattern(/^#[0-9A-F]{6}$/i).required(),
-  active: Joi.boolean().required(),
-  default: Joi.boolean().required(),
+  isActive: Joi.boolean().required(),
+  isDefault: Joi.boolean().required(),
 });
 
 export const updateTaskStatusSchema = Joi.object({
   name: Joi.string().min(3).max(50).optional(),
-  code: Joi.string().min(2).max(20).optional(),
+  code: Joi.string().pattern(/^[A-Z]+(_[A-Z]+)*$/).min(2).max(20).optional(),
   color: Joi.string().pattern(/^#[0-9A-F]{6}$/i).optional(),
-  active: Joi.boolean().optional(),
-  default: Joi.boolean().optional(),
+  isActive: Joi.boolean().optional(),
+  isDefault: Joi.boolean().optional(),
 }).min(1);
