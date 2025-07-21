@@ -31,7 +31,47 @@ export const createTaskStatus = async (req: Request, res: Response) => {
       success: true,
       message: 'Task status created successfully',
       data: newTaskStatus
-    })
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+export const updateTaskStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, color, isActive, isDefault } = req.body;
+    const taskStatus = await TaskStatusModel.findById(id);
+    if (!taskStatus) {
+      res.status(404).json({ error: "Task status not found" });
+      return;
+    }
+
+    if (taskStatus.isDefault) {
+      res.status(400).json({ error: "Cannot modify default status" });
+      return;
+    }
+
+    if (name) {
+      const newCode = generateCode(name);
+      const existingStatus = await TaskStatusModel.findOne({ code: newCode, _id: { $ne: id } });
+      if (existingStatus) {
+        res.status(400).json({ error: `Task status with code '${newCode}' already exists` });
+        return;
+      }
+      taskStatus.name = name;
+      taskStatus.code = newCode;
+    }
+    if (color) taskStatus.color = color;
+    if (isActive !== undefined) taskStatus.isActive = isActive;
+    if (isDefault !== undefined) taskStatus.isDefault = isDefault;
+
+    await taskStatus.save();
+    res.status(200).json({
+      success: true,
+      message: 'Task status updated successfully',
+      data: taskStatus
+    });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error' });
   }
