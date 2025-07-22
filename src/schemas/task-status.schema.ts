@@ -3,7 +3,7 @@ import TaskStatusModel from "../models/task-status.model";
 
 export const defaultStatuses = [
   { name: "To Do", code: "TO_DO", color: "#FF0000", isActive: true, isDefault: true },
-  { name: "In Process", code: "IN_PROGRESS", color: "#FFA500", isActive: true, isDefault: false },
+  { name: "In Process", code: "IN_PROCESS", color: "#FFA500", isActive: true, isDefault: false },
   { name: "Done", code: "DONE", color: "#00FF00", isActive: true, isDefault: false },
 ];
 

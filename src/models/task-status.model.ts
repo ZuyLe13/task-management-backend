@@ -9,11 +9,11 @@ export interface TaskStatus extends Document {
 }
 
 const taskStatusSchema = new Schema<TaskStatus>({
-  name: { type: String, required: true, unique: true },
-  code: { type: String, required: true, unique: true },
-  color: { type: String, required: true, unique: true },
-  isActive: { type: Boolean, required: true },
-  isDefault: { type: Boolean, required: true },
+  name: { type: String, required: true },
+  code: { type: String, required: true },
+  color: { type: String, required: true },
+  isActive: { type: Boolean },
+  isDefault: { type: Boolean },
 });
 
 export const TaskStatusModel = mongoose.model<TaskStatus>("TaskStatus", taskStatusSchema);

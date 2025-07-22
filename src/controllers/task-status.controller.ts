@@ -47,11 +47,6 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
       return;
     }
 
-    if (taskStatus.isDefault) {
-      res.status(400).json({ error: "Cannot modify default status" });
-      return;
-    }
-
     if (name) {
       const newCode = generateCode(name);
       const existingStatus = await TaskStatusModel.findOne({ code: newCode, _id: { $ne: id } });
@@ -74,5 +69,22 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+export const deleteTaskStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const taskStatus = await TaskStatusModel.findById(id);
+
+    if (!taskStatus) {
+      res.status(404).json({ error: "Task status not found" });
+      return;
+    }
+
+    await taskStatus.deleteOne();
+    res.status(200).json({ message: "Task status deleted successfully" });
+  } catch (error) { 
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
