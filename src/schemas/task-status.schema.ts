@@ -2,9 +2,9 @@ import Joi from "joi";
 import TaskStatusModel from "../models/task-status.model";
 
 export const defaultStatuses = [
-  { name: "To Do", code: "TO_DO", color: "#FF0000", isActive: true, isDefault: true },
-  { name: "In Process", code: "IN_PROCESS", color: "#FFA500", isActive: true, isDefault: false },
-  { name: "Done", code: "DONE", color: "#00FF00", isActive: true, isDefault: false },
+  { name: "To Do", code: "TO_DO", color: "#cccccc", isActive: true, isDefault: true },
+  { name: "In Process", code: "IN_PROCESS", color: "#007bff", isActive: true, isDefault: false },
+  { name: "Done", code: "DONE", color: "#28a745", isActive: true, isDefault: false },
 ];
 
 export const initializeDefaultStatuses = async () => {

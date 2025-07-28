@@ -1,22 +1,38 @@
-import { Types } from "mongoose";
-
-
-export enum TASK_STATUS {
-  TODO = 'todo',
-  IN_PROGRESS = 'in_progress',
-  SELF_TEST = 'self_test',
-  DONE = 'done'
-}
+import mongoose, { Schema, Types } from "mongoose";
 
 export interface Task {
+  id: String;
   title: String;
-  desc?: String;
-  status: TASK_STATUS;
-  project: Types.ObjectId;
-  assignee?: Types.ObjectId;
+  description?: String;
+  status: String;
+  assignee?: String;
+  reporter?: String;
   startDate?: Date;
   endDate?: Date;
-  createdBy: Types.ObjectId;
+  label?: String[];
+  taskType?: String;
+  priority?: String;
+  comments: String[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+export const taskSchema = new Schema<Task>(
+  {
+    id: { type: String },
+    title: { type: String, required: true },
+    description: { type: String },
+    status: { type: String, required: true },
+    assignee: { type: String },
+    reporter: { type: String },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    label: { type: [String], default: [''] },
+    taskType: { type: String },
+    priority: { type: String },
+    comments: { type: [String], default: [''] }
+  }, { timestamps: true }
+);
+
+export const TaskModel = mongoose.model<Task>('Task', taskSchema);
+export default TaskModel;
