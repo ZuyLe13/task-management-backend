@@ -1,24 +1,4 @@
 import Joi from "joi";
-import TaskStatusModel from "../models/task-status.model";
-
-export const defaultStatuses = [
-  { name: "To Do", code: "TO_DO", color: "#FF0000", isActive: true, isDefault: true },
-  { name: "In Process", code: "IN_PROCESS", color: "#FFA500", isActive: true, isDefault: false },
-  { name: "Done", code: "DONE", color: "#00FF00", isActive: true, isDefault: false },
-];
-
-export const initializeDefaultStatuses = async () => {
-  try {
-    for (const status of defaultStatuses) {
-      const existingStatus = await TaskStatusModel.findOne({code: status.code});
-      if (!existingStatus) {
-        await new TaskStatusModel(status).save();
-      }
-    }
-  } catch (error) {
-    console.error("Error initializing default statuses:", error);
-  }
-}
 
 export const generateCode = (name: string): string => {
   return name.toUpperCase().replace(/\s+/g, '_').slice(0, 20);
