@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 
 export interface Task {
-  id: String;
+  taskKey: String;
   title: String;
   description?: String;
   status: String;
@@ -19,7 +19,7 @@ export interface Task {
 
 export const taskSchema = new Schema<Task>(
   {
-    id: { type: String },
+    taskKey: { type: String },
     title: { type: String, required: true },
     description: { type: String },
     status: { type: String, required: true },
@@ -27,10 +27,10 @@ export const taskSchema = new Schema<Task>(
     reporter: { type: String },
     startDate: { type: Date },
     endDate: { type: Date },
-    label: { type: [String], default: [''] },
+    label: { type: [String], default: [] },
     taskType: { type: String },
     priority: { type: String },
-    comments: { type: [String], default: [''] }
+    comments: { type: [String], default: [] }
   }, { timestamps: true }
 );
 

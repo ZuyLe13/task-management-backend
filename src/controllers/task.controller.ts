@@ -1,12 +1,11 @@
 import { Response, Request } from 'express';
 import TaskModel from '../models/task.model';
-import taskSchema from '../schemas/task.schema';
 
-async function generateTaskId(): Promise<string> {
+async function generateTaskKey(): Promise<string> {
   const lastTask = await TaskModel.findOne().sort({ createdAt: -1 }).exec();
   let nextNumber = 1;
-  if (lastTask && lastTask.id) {
-    const match = lastTask.id.match(/^ZT-(\d+)$/);
+  if (lastTask && lastTask.taskKey) {
+    const match = lastTask.taskKey.match(/^ZT-(\d+)$/);
     if (match) {
       nextNumber = parseInt(match[1], 10) + 1;
     }
@@ -29,19 +28,11 @@ export const getAllTask = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { error, value } = taskSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-      res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: error.details.map(detail => detail.message)
-      }); return;
-    }
-
-    const taskId = await generateTaskId();
+    const { value } = req.body;
+    const taskKey = await generateTaskKey();
     const newTask = new TaskModel({
       ...value,
-      id: taskId
+      taskKey: taskKey
     });
     const savedTask = await newTask.save();
 

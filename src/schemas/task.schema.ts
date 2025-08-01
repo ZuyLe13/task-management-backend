@@ -1,16 +1,9 @@
 import Joi from 'joi';
 import { Types } from 'mongoose';
 
-// Custom Joi extension to validate MongoDB ObjectId
-const objectId = Joi.string().custom((value, helpers) => {
-  if (!Types.ObjectId.isValid(value)) {
-    return helpers.error('any.invalid');
-  }
-  return value;
-}, 'MongoDB ObjectId');
 
 const taskSchema = Joi.object({
-  id: Joi.string(),
+  taskKey: Joi.string(),
   title: Joi.string().required().trim().min(1).max(100),
   description: Joi.string().trim().max(1000).optional().allow(''),
   status: Joi.string().required().trim().min(1).max(50),
