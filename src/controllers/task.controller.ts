@@ -18,7 +18,6 @@ export const getAllTask = async (req: Request, res: Response) => {
     const tasks = await TaskModel.find();
     res.json(tasks);
   } catch (error) {
-    console.error('Error creating task:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -42,7 +41,6 @@ export const createTask = async (req: Request, res: Response) => {
       data: savedTask
     });
   } catch (error) {
-    console.error('Error creating task:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'

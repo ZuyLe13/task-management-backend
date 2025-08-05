@@ -1,6 +1,4 @@
 import Joi from 'joi';
-import { Types } from 'mongoose';
-
 
 const taskSchema = Joi.object({
   taskKey: Joi.string(),
