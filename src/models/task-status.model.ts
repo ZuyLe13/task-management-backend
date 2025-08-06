@@ -14,7 +14,7 @@ const taskStatusSchema = new Schema<TaskStatus>({
   color: { type: String, required: true },
   isActive: { type: Boolean },
   isDefault: { type: Boolean },
-});
+}, { timestamps: true });
 
 export const TaskStatusModel = mongoose.model<TaskStatus>("TaskStatus", taskStatusSchema);
 export default TaskStatusModel;
