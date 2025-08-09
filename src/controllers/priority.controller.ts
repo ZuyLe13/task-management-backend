@@ -44,7 +44,6 @@ export const createPriority = async (req: Request, res: Response) => {
     const { name, level, color, isActive = true, isDefault = false } = req.body;
     const code = generateCode(name);
 
-    // Check if code already exists
     const existingPriority = await PriorityModel.findOne({ code });
     if (existingPriority) {
       res.status(400).json({
@@ -54,17 +53,6 @@ export const createPriority = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if level already exists
-    const existingLevel = await PriorityModel.findOne({ level });
-    if (existingLevel) {
-      res.status(400).json({
-        success: false,
-        message: `Priority with level already exists`
-      });
-      return;
-    }
-
-    // If setting as default, unset other defaults
     if (isDefault) {
       await PriorityModel.updateMany({}, { isDefault: false });
     }
@@ -103,42 +91,19 @@ export const updatePriority = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if new code conflicts with existing priorities
     if (name) {
       const newCode = generateCode(name);
-      const codeConflict = await PriorityModel.findOne({ 
-        code: newCode, 
-        _id: { $ne: id } 
-      });
+      const codeConflict = await PriorityModel.findOne({ code: newCode, _id: { $ne: id } });
       if (codeConflict) {
-        res.status(400).json({
-          success: false,
-          message: `Priority with code '${newCode}' already exists`
-        });
+        res.status(400).json({ success: false, message: `Priority with code '${newCode}' already exists` });
         return;
       }
       existingPriority.name = name;
       existingPriority.code = newCode;
-    }
-
-    // Check if new level conflicts with existing priorities
-    if (level !== undefined) {
-      const levelConflict = await PriorityModel.findOne({ 
-        level, 
-        _id: { $ne: id } 
-      });
-      if (levelConflict) {
-        res.status(400).json({
-          success: false,
-          message: `Priority with level '${level}' already exists`
-        });
-        return;
-      }
       existingPriority.level = level;
+      existingPriority.color = color;
+      existingPriority.isActive = isActive;
     }
-
-    if (color) existingPriority.color = color;
-    if (isActive !== undefined) existingPriority.isActive = isActive;
     
     // If setting as default, unset other defaults
     if (isDefault !== undefined) {
@@ -185,45 +150,6 @@ export const deletePriority = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error in deletePriority:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-}
-
-export const getActivePriorities = async (req: Request, res: Response) => {
-  try {
-    const priorities = await PriorityModel.find({ isActive: true }).sort({ level: 1 });
-    res.json({
-      success: true,
-      data: priorities
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-}
-
-export const getDefaultPriority = async (req: Request, res: Response) => {
-  try {
-    const defaultPriority = await PriorityModel.findOne({ isDefault: true, isActive: true });
-    
-    if (!defaultPriority) {
-      res.status(404).json({
-        success: false,
-        message: 'No default priority found'
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: defaultPriority
-    });
-  } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Internal server error'
