@@ -27,10 +27,9 @@ export const getAllTask = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { value } = req.body;
     const taskKey = await generateTaskKey();
     const newTask = new TaskModel({
-      ...value,
+      ...req.body,
       taskKey: taskKey
     });
     const savedTask = await newTask.save();
@@ -46,4 +45,51 @@ export const createTask = async (req: Request, res: Response) => {
       message: 'Internal server error'
     }); return;
   }
-}
+};
+
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updatedTask = await TaskModel.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updatedTask) {
+      res.status(404).json({ success: false, message: 'Task not found' }); return;
+    }
+    res.json({ success: true, message: 'Task updated successfully', data: updatedTask });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+export const deleteTask = async (req: Request, res: Response) => {
+  try {
+    const { taskKey } = req.params;
+    const deletedTask = await TaskModel.findOneAndDelete({ taskKey });
+    if (!deletedTask) {
+      res.status(404).json({ success: false, message: 'Task not found' }); return;
+    }
+    res.json({ success: true, message: 'Task deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+export const updateTaskStatus = async (req: Request, res: Response) => {
+  try {
+    const { taskKey } = req.params;
+    const { status } = req.body;
+    if (!status) {
+      res.status(400).json({ success: false, message: 'Status is required' }); return;
+    }
+    const updatedTask = await TaskModel.findOneAndUpdate(
+      { taskKey },
+      { status },
+      { new: true }
+    );
+    if (!updatedTask) {
+      res.status(404).json({ success: false, message: 'Task not found' }); return;
+    }
+    res.json({ success: true, message: 'Task status updated', data: updatedTask });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
