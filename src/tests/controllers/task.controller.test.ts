@@ -3,7 +3,6 @@ import express from 'express';
 import * as taskController from '../../controllers/task.controller';
 import TaskModel from '../../models/task.model';
 
-// Mock TaskModel methods
 jest.mock('../../models/task.model');
 
 const app = express();
@@ -32,7 +31,6 @@ describe('Task Controller', () => {
       exec: jest.fn().mockResolvedValue(null),
     });
 
-    // Mock save method
     TaskModel.prototype.save = jest.fn().mockResolvedValue({ taskKey: 'ZT-1', name: 'Test' });
 
     const res = await request(app).post('/tasks').send({ name: 'Test' });
