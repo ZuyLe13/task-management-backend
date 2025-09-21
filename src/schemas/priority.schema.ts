@@ -57,6 +57,4 @@ export const updatePrioritySchema = Joi.object({
   isDefault: Joi.boolean().optional().messages({
     'boolean.base': 'isDefault must be a boolean'
   }),
-}).min(1).messages({
-  'object.min': 'At least one field must be provided for update'
-});
+}).min(1);
