@@ -7,9 +7,11 @@ import taskStatusRoutes from './routes/task-status.route';
 import taskRoutes from './routes/task.route';
 import priorityRoutes from './routes/priority.route';
 import taskTypeRoutes from './routes/task-type.route';
+import aiRoutes from './routes/ai.route';
 import { errorHandler } from './middlewares/errorHandler';
 import connectDB from './config/db';
 import cookieParser from 'cookie-parser';
+import bodyParser from "body-parser";
 
 const app = express();
 
@@ -19,6 +21,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 connectDB();
 
@@ -30,6 +33,9 @@ app.use('/api/v1', taskStatusRoutes);
 app.use('/api/v1', taskRoutes);
 app.use('/api/v1', taskTypeRoutes);
 app.use('/api/v1', priorityRoutes)
+
+// AI Routes
+app.use('/api/v1', aiRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
