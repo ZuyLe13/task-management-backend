@@ -9,6 +9,7 @@ interface Config {
   mongoDbUri?: string;
   jwtSecret: string;
   jwtRefreshSecret: string;
+  ollamaUrl?: string;
 }
 
 const config: Config = {
@@ -17,6 +18,7 @@ const config: Config = {
   mongoDbUri: process.env.MONGO_URI,
   jwtSecret: process.env.JWT_SECRET || 'default-secret-key',
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-key',
+  ollamaUrl: process.env.OLLAMA_URL,
 }
 
 export default config;
